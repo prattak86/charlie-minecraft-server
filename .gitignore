@@ -1,2 +1,9 @@
 # Ignore all .env files
 **/.env
+
+# Ignore all venv directories
+**/venv
+
+# Ingore Terraform State file
+**/terraform.tfstate
+**/minecraft-infra/.terraform/*

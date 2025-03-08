@@ -7,7 +7,6 @@ if [ -f .env ]; then
     export $(cat .env | xargs)
 fi
 
-
 # Variables
 MINECRAFT_RG=${MINECRAFT_RG}
 MINECRAFT_STORAGE_ACCT=${MINECRAFT_STORAGE_ACCT}
@@ -19,6 +18,9 @@ MINECRAFT_SUBNET_NAME=${MINECRAFT_SUBNET_NAME}
 MINECRAFT_NSG_NAME=${MINECRAFT_NSG_NAME}
 MINECRAFT_IMAGE="itzg/minecraft-server"
 MINECRAFT_PORT=25565
+
+# Register the Microsoft.ContainerInstance resource provider
+az provider register --namespace Microsoft.ContainerInstance
 
 # Create Resource Group
 az group create --name $MINECRAFT_RG --location $MINECRAFT_STORAGE_LOC
@@ -68,11 +70,13 @@ az container create \
     --image $MINECRAFT_IMAGE \
     --ports $MINECRAFT_PORT \
     --environment-variables EULA=TRUE \
-    --dns-name-label $MINECRAFT_CONTAINER_NAME \
     --location $MINECRAFT_STORAGE_LOC \
     --restart-policy OnFailure \
     --vnet $MINECRAFT_VNET_NAME \
-    --subnet $MINECRAFT_SUBNET_NAME
+    --subnet $MINECRAFT_SUBNET_NAME \
+    --os-type Linux \
+    --cpu 2 \
+    --memory 4 
 
 # Output the FQDN of the container
 az container show \
