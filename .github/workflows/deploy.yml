@@ -1,0 +1,84 @@
+name: Deploy Charlie's Minecraft Server
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  plan:
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v2
+
+    - name: Set up OpenTofu
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y opentofu
+
+    - name: Initialize OpenTofu
+      working-directory: ./minecraft-infra
+      run: tofu init
+      env:
+        ARM_CLIENT_ID: ${{ secrets.ARM_CLIENT_ID }}
+        ARM_CLIENT_SECRET: ${{ secrets.ARM_CLIENT_SECRET }}
+        ARM_SUBSCRIPTION_ID: ${{ secrets.ARM_SUBSCRIPTION_ID }}
+        ARM_TENANT_ID: ${{ secrets.ARM_TENANT_ID }}
+        TF_VAR_backend_storage_account_name: ${{ secrets.BACKEND_STORAGE_ACCOUNT_NAME }}
+        TF_VAR_backend_storage_container_name: ${{ secrets.BACKEND_STORAGE_CONTAINER_NAME }}
+        TF_VAR_backend_resource_group_name: ${{ secrets.BACKEND_RESOURCE_GROUP_NAME }}
+
+    - name: Plan OpenTofu
+      working-directory: ./minecraft-infra
+      run: tofu plan
+      env:
+        ARM_CLIENT_ID: ${{ secrets.ARM_CLIENT_ID }}
+        ARM_CLIENT_SECRET: ${{ secrets.ARM_CLIENT_SECRET }}
+        ARM_SUBSCRIPTION_ID: ${{ secrets.ARM_SUBSCRIPTION_ID }}
+        ARM_TENANT_ID: ${{ secrets.ARM_TENANT_ID }}
+        TF_VAR_backend_storage_account_name: ${{ secrets.BACKEND_STORAGE_ACCOUNT_NAME }}
+        TF_VAR_backend_storage_container_name: ${{ secrets.BACKEND_STORAGE_CONTAINER_NAME }}
+        TF_VAR_backend_resource_group_name: ${{ secrets.BACKEND_RESOURCE_GROUP_NAME }}
+
+  apply:
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v2
+
+    - name: Set up OpenTofu
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y opentofu
+
+    - name: Initialize OpenTofu
+      working-directory: ./minecraft-infra
+      run: tofu init
+      env:
+        ARM_CLIENT_ID: ${{ secrets.ARM_CLIENT_ID }}
+        ARM_CLIENT_SECRET: ${{ secrets.ARM_CLIENT_SECRET }}
+        ARM_SUBSCRIPTION_ID: ${{ secrets.ARM_SUBSCRIPTION_ID }}
+        ARM_TENANT_ID: ${{ secrets.ARM_TENANT_ID }}
+        TF_VAR_backend_storage_account_name: ${{ secrets.BACKEND_STORAGE_ACCOUNT_NAME }}
+        TF_VAR_backend_storage_container_name: ${{ secrets.BACKEND_STORAGE_CONTAINER_NAME }}
+        TF_VAR_backend_resource_group_name: ${{ secrets.BACKEND_RESOURCE_GROUP_NAME }}
+
+    - name: Apply OpenTofu
+      working-directory: ./minecraft-infra
+      run: tofu apply -auto-approve
+      env:
+        ARM_CLIENT_ID: ${{ secrets.ARM_CLIENT_ID }}
+        ARM_CLIENT_SECRET: ${{ secrets.ARM_CLIENT_SECRET }}
+        ARM_SUBSCRIPTION_ID: ${{ secrets.ARM_SUBSCRIPTION_ID }}
+        ARM_TENANT_ID: ${{ secrets.ARM_TENANT_ID }}
+        TF_VAR_backend_storage_account_name: ${{ secrets.BACKEND_STORAGE_ACCOUNT_NAME }}
+        TF_VAR_backend_storage_container_name: ${{ secrets.BACKEND_STORAGE_CONTAINER_NAME }}
+        TF_VAR_backend_resource_group_name: ${{ secrets.BACKEND_RESOURCE_GROUP_NAME }}

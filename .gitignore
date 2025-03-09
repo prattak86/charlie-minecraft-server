@@ -7,3 +7,8 @@
 # Ingore Terraform State file
 **/terraform.tfstate
 **/minecraft-infra/.terraform/*
+
+# Ignore some Minecraft configs
+**/minecraft-infra/server.properties
+**/minecraft-infra/rcon-cli.yml
+**/minecraft-infra/whitelist.json
