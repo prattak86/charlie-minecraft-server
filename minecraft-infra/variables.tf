@@ -1,3 +1,18 @@
+variable "backend_resource_group_name" {
+  description = "Resource group name for Tofu backend state"
+  type        = string
+}
+
+variable "backend_storage_account_name" {
+  description = "Storage account name for Tofu backend state"
+  type        = string
+}
+
+variable "backend_storage_container_name" {
+  description = "Storage container name for Tofu backend state"
+  type        = string
+}
+
 variable "minecraft_rg" {
   description = "Resource group name"
   type        = string
